@@ -3,3 +3,4 @@ Boarder.app/
 *.o
 .DS_Store
 .claude/settings.local.json
+.claude/.last_commit_prompt
