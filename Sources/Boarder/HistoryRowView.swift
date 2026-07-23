@@ -10,15 +10,10 @@ struct HistoryRowView: View {
             leadingIcon
                 .frame(width: 24, height: 24)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(item.previewText)
-                    .font(.callout)
-                    .lineLimit(2)
-                    .truncationMode(.tail)
-                Text(item.date, style: .relative)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
+            Text(item.previewText)
+                .font(.callout)
+                .lineLimit(2)
+                .truncationMode(.tail)
 
             Spacer(minLength: 8)
 
