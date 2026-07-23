@@ -91,4 +91,23 @@ final class ClipboardHistoryStoreTests: XCTestCase {
 
         XCTAssertEqual(scratchPasteboard.string(forType: .string), "copy me")
     }
+
+    func testSelectingEarlierItemAfterNewerCopyRestoresItForPaste() throws {
+        let pasteboard = NSPasteboard.withUniqueName()
+        defer { pasteboard.releaseGlobally() }
+        let store = makeStore(pasteboard: pasteboard)
+
+        // User selects "A" and copies it (Cmd+C); Boarder's watcher records it.
+        store.recordNewPasteboardContent(PasteboardSnapshot(content: .text("A")))
+        let itemA = try XCTUnwrap(store.items.first)
+
+        // User selects "B" and copies it (Cmd+C); the system pasteboard now holds "B".
+        store.recordNewPasteboardContent(PasteboardSnapshot(content: .text("B")))
+
+        // User picks "A" from the Boarder history list.
+        store.selectAndCopyToClipboard(itemA.id)
+
+        // A Cmd+V right now should paste "A", not "B".
+        XCTAssertEqual(pasteboard.string(forType: .string), "A")
+    }
 }
