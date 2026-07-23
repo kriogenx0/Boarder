@@ -1,0 +1,5 @@
+.build/
+Boarder.app/
+*.o
+.DS_Store
+.claude/settings.local.json
