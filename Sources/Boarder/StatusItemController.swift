@@ -14,11 +14,14 @@ final class StatusItemController: NSObject {
 
         let popover = NSPopover()
         popover.behavior = .transient
-        popover.contentSize = NSSize(width: 320, height: 420)
-        popover.contentViewController = NSHostingController(rootView: HistoryListView(store: store))
+        popover.contentSize = NSSize(width: 380, height: 420)
         self.popover = popover
 
         super.init()
+
+        popover.contentViewController = NSHostingController(
+            rootView: HistoryListView(store: store, onSelect: { [weak self] in self?.popover.close() })
+        )
 
         statusItem.button?.image = SurfboardIcon.renderTemplateImage()
         statusItem.button?.action = #selector(togglePopover)

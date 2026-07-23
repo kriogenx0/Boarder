@@ -5,15 +5,11 @@ struct HistoryRowView: View {
     let item: ClipboardItem
     let isSelected: Bool
 
+    @State private var isHovered = false
+
     var body: some View {
         HStack(spacing: 8) {
-            leadingIcon
-                .frame(width: 24, height: 24)
-
-            Text(item.previewText)
-                .font(.callout)
-                .lineLimit(2)
-                .truncationMode(.tail)
+            rowContent
 
             Spacer(minLength: 8)
 
@@ -24,24 +20,42 @@ struct HistoryRowView: View {
         }
         .padding(.vertical, 6)
         .padding(.horizontal, 6)
-        .background(isSelected ? Color.blue.opacity(0.12) : Color.clear)
+        .contentShape(Rectangle())
+        .background(backgroundColor)
         .clipShape(RoundedRectangle(cornerRadius: 6))
+        .onHover { hovering in
+            isHovered = hovering
+        }
+    }
+
+    private var backgroundColor: Color {
+        if isSelected {
+            return Color.blue.opacity(isHovered ? 0.18 : 0.12)
+        } else if isHovered {
+            return Color.primary.opacity(0.06)
+        } else {
+            return Color.clear
+        }
     }
 
     @ViewBuilder
-    private var leadingIcon: some View {
+    private var rowContent: some View {
         switch item.content {
         case .text:
-            Image(systemName: "text.alignleft")
-                .foregroundStyle(.secondary)
+            Text(item.previewText)
+                .font(.callout)
+                .lineLimit(2)
+                .truncationMode(.tail)
         case .image(let data):
             if let nsImage = NSImage(data: data) {
                 Image(nsImage: nsImage)
                     .resizable()
                     .scaledToFit()
+                    .frame(height: 40)
                     .clipShape(RoundedRectangle(cornerRadius: 4))
             } else {
-                Image(systemName: "photo")
+                Text(item.previewText)
+                    .font(.callout)
                     .foregroundStyle(.secondary)
             }
         }

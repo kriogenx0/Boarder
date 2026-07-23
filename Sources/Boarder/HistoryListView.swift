@@ -3,6 +3,7 @@ import AppKit
 
 struct HistoryListView: View {
     @ObservedObject var store: ClipboardHistoryStore
+    let onSelect: () -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -23,7 +24,10 @@ struct HistoryListView: View {
                         ForEach(store.items) { item in
                             HistoryRowView(item: item, isSelected: item.id == store.selectedItemID)
                                 .contentShape(Rectangle())
-                                .onTapGesture { store.selectAndCopyToClipboard(item.id) }
+                                .onTapGesture {
+                                    store.selectAndCopyToClipboard(item.id)
+                                    onSelect()
+                                }
                                 .contextMenu {
                                     Button("Delete", role: .destructive) {
                                         store.delete(item.id)
@@ -48,6 +52,6 @@ struct HistoryListView: View {
             }
             .padding(10)
         }
-        .frame(width: 320, height: 420)
+        .frame(width: 380, height: 420)
     }
 }
