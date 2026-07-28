@@ -4,7 +4,7 @@ build:
 	swift build
 
 test:
-	swift test
+	swift test --disable-sandbox
 
 # Fast dev loop: debug build, kill any running Boarder (debug or app bundle), relaunch debug binary.
 dev: build

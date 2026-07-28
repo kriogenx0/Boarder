@@ -22,7 +22,11 @@ struct HistoryListView: View {
                 ScrollView {
                     LazyVStack(spacing: 2) {
                         ForEach(store.items) { item in
-                            HistoryRowView(item: item, isSelected: item.id == store.selectedItemID)
+                            HistoryRowView(
+                                item: item,
+                                isSelected: item.id == store.selectedItemID,
+                                onDelete: { store.delete(item.id) }
+                            )
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     store.selectAndCopyToClipboard(item.id)
