@@ -1,9 +1,8 @@
 import SwiftUI
 import AppKit
 
-/// A fish-shaped surfboard silhouette: full nose and tail with a pinched waist partway down each
-/// rail. The waist pinch is a side-boundary feature (rather than a tail notch), giving a shape
-/// that's unmistakably organic/board-like and clearly distinct at small menu-bar sizes.
+/// An elongated surfboard silhouette with a swallow/fish tail notch - the notch is what reads as
+/// "surfboard" specifically rather than a generic oval/leaf, even at small menu-bar sizes.
 struct SurfboardShape: Shape {
     func path(in rect: CGRect) -> Path {
         let midX = rect.midX
@@ -13,54 +12,43 @@ struct SurfboardShape: Shape {
         let w = rect.width
 
         let chestHalf = w * 0.5
-        let waistHalf = w * 0.30
-        let hipHalf = w * 0.40
-        let chestY = top + h * 0.32
-        let waistY = top + h * 0.62
-        let hipY = top + h * 0.80
+        let tailHalf = w * 0.32
+        let tailShoulderHalf = w * 0.36
+        let noseTuck = h * 0.05
+        let chestY = top + h * 0.40
+        let tailY = bottom - h * 0.03
+        let notchDepth = h * 0.10
 
         let nose = CGPoint(x: midX, y: top)
         let rightChest = CGPoint(x: midX + chestHalf, y: chestY)
         let leftChest = CGPoint(x: midX - chestHalf, y: chestY)
-        let rightWaist = CGPoint(x: midX + waistHalf, y: waistY)
-        let leftWaist = CGPoint(x: midX - waistHalf, y: waistY)
-        let rightHip = CGPoint(x: midX + hipHalf, y: hipY)
-        let leftHip = CGPoint(x: midX - hipHalf, y: hipY)
-        let tail = CGPoint(x: midX, y: bottom)
+        let rightTail = CGPoint(x: midX + tailHalf, y: tailY)
+        let leftTail = CGPoint(x: midX - tailHalf, y: tailY)
+        let notch = CGPoint(x: midX, y: tailY - notchDepth)
 
         var path = Path()
         path.move(to: nose)
         path.addCurve(
             to: rightChest,
-            control1: CGPoint(x: midX + chestHalf * 0.85, y: top + h * 0.04),
-            control2: CGPoint(x: midX + chestHalf, y: chestY - h * 0.10)
+            control1: CGPoint(x: midX + chestHalf * 0.85, y: top + noseTuck),
+            control2: CGPoint(x: midX + chestHalf, y: chestY - h * 0.16)
         )
         path.addCurve(
-            to: rightWaist,
-            control1: CGPoint(x: midX + chestHalf, y: chestY + h * 0.14),
-            control2: CGPoint(x: midX + waistHalf, y: waistY - h * 0.08)
+            to: rightTail,
+            control1: CGPoint(x: midX + chestHalf, y: chestY + h * 0.34),
+            control2: CGPoint(x: midX + tailShoulderHalf, y: tailY - h * 0.07)
         )
-        path.addCurve(
-            to: rightHip,
-            control1: CGPoint(x: midX + waistHalf, y: waistY + h * 0.08),
-            control2: CGPoint(x: midX + hipHalf, y: hipY - h * 0.05)
-        )
-        path.addQuadCurve(to: tail, control: CGPoint(x: midX + hipHalf * 0.4, y: bottom))
-        path.addQuadCurve(to: leftHip, control: CGPoint(x: midX - hipHalf * 0.4, y: bottom))
-        path.addCurve(
-            to: leftWaist,
-            control1: CGPoint(x: midX - hipHalf, y: hipY - h * 0.05),
-            control2: CGPoint(x: midX - waistHalf, y: waistY + h * 0.08)
-        )
+        path.addLine(to: notch)
+        path.addLine(to: leftTail)
         path.addCurve(
             to: leftChest,
-            control1: CGPoint(x: midX - waistHalf, y: waistY - h * 0.08),
-            control2: CGPoint(x: midX - chestHalf, y: chestY + h * 0.14)
+            control1: CGPoint(x: midX - tailShoulderHalf, y: tailY - h * 0.07),
+            control2: CGPoint(x: midX - chestHalf, y: chestY + h * 0.34)
         )
         path.addCurve(
             to: nose,
-            control1: CGPoint(x: midX - chestHalf, y: chestY - h * 0.10),
-            control2: CGPoint(x: midX - chestHalf * 0.85, y: top + h * 0.04)
+            control1: CGPoint(x: midX - chestHalf, y: chestY - h * 0.16),
+            control2: CGPoint(x: midX - chestHalf * 0.85, y: top + noseTuck)
         )
         path.closeSubpath()
         return path
