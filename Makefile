@@ -1,7 +1,7 @@
 .PHONY: build test dev app clean
 
 build:
-	swift build
+	swift build --disable-sandbox
 
 test:
 	swift test --disable-sandbox

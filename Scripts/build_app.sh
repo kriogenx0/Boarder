@@ -10,13 +10,19 @@ BIN_PATH=".build/${BUILD_CONFIG}/${APP_NAME}"
 APP_BUNDLE="${APP_NAME}.app"
 
 echo "Building ${APP_NAME} (${BUILD_CONFIG})..."
-swift build -c "${BUILD_CONFIG}"
+swift build -c "${BUILD_CONFIG}" --disable-sandbox
 
 echo "Assembling ${APP_BUNDLE}..."
 rm -rf "${APP_BUNDLE}"
 mkdir -p "${APP_BUNDLE}/Contents/MacOS"
 mkdir -p "${APP_BUNDLE}/Contents/Resources"
 cp "${BIN_PATH}" "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}"
+
+echo "Generating app icon..."
+ICONSET_DIR=$(mktemp -d)/AppIcon.iconset
+swift Scripts/generate_app_icon.swift "${ICONSET_DIR}"
+iconutil -c icns "${ICONSET_DIR}" -o "${APP_BUNDLE}/Contents/Resources/AppIcon.icns"
+rm -rf "$(dirname "${ICONSET_DIR}")"
 
 cat > "${APP_BUNDLE}/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -31,6 +37,8 @@ cat > "${APP_BUNDLE}/Contents/Info.plist" <<PLIST
     <string>com.boarder.app</string>
     <key>CFBundleExecutable</key>
     <string>${APP_NAME}</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
