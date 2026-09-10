@@ -25,6 +25,7 @@ struct HistoryListView: View {
                             HistoryRowView(
                                 item: item,
                                 isSelected: item.id == store.selectedItemID,
+                                onCopyPlainText: plainTextCopyAction(for: item),
                                 onDelete: { store.delete(item.id) }
                             )
                                 .contentShape(Rectangle())
@@ -33,6 +34,9 @@ struct HistoryListView: View {
                                     onSelect()
                                 }
                                 .contextMenu {
+                                    if let copyPlainText = plainTextCopyAction(for: item) {
+                                        Button("Copy as Plain Text", action: copyPlainText)
+                                    }
                                     Button("Delete", role: .destructive) {
                                         store.delete(item.id)
                                     }
@@ -57,5 +61,13 @@ struct HistoryListView: View {
             .padding(10)
         }
         .frame(width: 380, height: 420)
+    }
+
+    /// A closure that copies `item` to the clipboard as plain text, or `nil` when the item has no
+    /// plain-text form (an image). The row shows a trailing button and a context-menu entry when
+    /// this is non-nil.
+    private func plainTextCopyAction(for item: ClipboardItem) -> (() -> Void)? {
+        guard case .text = item.content else { return nil }
+        return { store.selectAndCopyToClipboard(item.id) }
     }
 }

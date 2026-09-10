@@ -4,6 +4,9 @@ import AppKit
 struct HistoryRowView: View {
     let item: ClipboardItem
     let isSelected: Bool
+    /// Copies this item to the clipboard as plain text without dismissing the list. `nil` for
+    /// items that have no plain-text form (images), so the button is hidden for them.
+    let onCopyPlainText: (() -> Void)?
     let onDelete: () -> Void
 
     @State private var isHovered = false
@@ -14,7 +17,7 @@ struct HistoryRowView: View {
         ZStack(alignment: .trailing) {
             HStack(spacing: 8) {
                 rowContent
-                Spacer(minLength: trailingAccessorySize)
+                Spacer(minLength: hoverAccessoryWidth)
             }
 
             trailingAccessory
@@ -29,15 +32,34 @@ struct HistoryRowView: View {
         }
     }
 
+    /// Reserved trailing width, kept constant between hover and rest states so the row text
+    /// doesn't reflow when the buttons appear.
+    private var hoverAccessoryWidth: CGFloat {
+        let count: CGFloat = onCopyPlainText == nil ? 1 : 2
+        return trailingAccessorySize * count + 2 * (count - 1)
+    }
+
     @ViewBuilder
     private var trailingAccessory: some View {
         if isHovered {
-            Button(action: onDelete) {
-                Image(systemName: "trash")
-                    .foregroundStyle(.secondary)
+            HStack(spacing: 2) {
+                if let onCopyPlainText {
+                    Button(action: onCopyPlainText) {
+                        Image(systemName: "doc.on.clipboard")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Copy as plain text")
+                    .frame(width: trailingAccessorySize, height: trailingAccessorySize)
+                }
+                Button(action: onDelete) {
+                    Image(systemName: "trash")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .help("Delete")
+                .frame(width: trailingAccessorySize, height: trailingAccessorySize)
             }
-            .buttonStyle(.plain)
-            .frame(width: trailingAccessorySize, height: trailingAccessorySize)
         } else if isSelected {
             Image(systemName: "checkmark.circle.fill")
                 .foregroundStyle(.blue)
